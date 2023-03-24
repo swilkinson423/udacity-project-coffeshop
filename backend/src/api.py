@@ -31,60 +31,91 @@ db_drop_and_create_all()
 #------------------------------------------------------#
 # Endpoint Routes
 #------------------------------------------------------#
-'''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+
+# GET /drinks
+@app.route('/drinks')
+@requires_auth('get:drinks')
+def drinks(payload):
+    
+    drinks = ''
+
+    # TODO return drink.short() data as 'drinks' var
+    # TODO return proper success/error codes
+    
+    return jsonify({
+        'success':True,
+        'drinks':drinks
+    })
 
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+# GET /drinks-detail
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def drinks_detail(payload):
+
+    drinks_detail = ''
+
+    # TODO return drinks.long() data as 'drinks_detail' var
+    # TODO return proper success/error codes
+
+    return jsonify({
+        'success':True,
+        'drinks':drinks_detail
+    })
 
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
+# POST /drinks
+@app.route('/drinks')
+@requires_auth('post:drinks')
+def post_drinks(payload):
+
+    drink = ''
+
+    # TODO check if payload contains drink.long() formatted data for new drink
+    # TODO format 'drink' var to be an array containing data from payload
+    # TODO return proper success/error codes
+
+    return jsonify({
+        'success':True.
+        'drinks':drink
+    })
 
 
-'''
-@TODO implement endpoint
-    PATCH /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
-'''
+# PATCH /drinks/<drink_id>
+@app.route('/drinks/<drink_id>')
+@requires_auth('patch:drinks')
+def update_drink(payload):
+
+    drink = ''
+
+    # TODO check to find drink by 'drink_id'
+        # TODO ?? Check if payload contains 'drinks.long()' ??
+    # TODO return 404 if ID doesn't exist
+    # TODO format 'drink' var to be an array containing data from payload
+    # TODO return proper success/error codes
+
+    return jsonify({
+        'success':True,
+        'drinks':drink
+    })
 
 
-'''
-@TODO implement endpoint
-    DELETE /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
-'''
+# DELETE /drinks/<drink_id>
+@app.route('/drinks/<drink_id>')
+@requires_auth('delete:drinks')
+def delete_drink(payload):
+
+    drink = ''
+
+    # TODO check to find drink by 'drink_id'
+    # TODO return 404 if ID doesn't exist
+    # TODO delete record for drink
+    # TODO return proper success/error codes
+
+    return jsonify({
+        'success':True,
+        'delete':drink_id
+    })
 
 
 #------------------------------------------------------#
