@@ -7,19 +7,30 @@ from flask_cors import CORS
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
 
+
+#------------------------------------------------------#
+# App Setup
+#------------------------------------------------------#
+
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
+db_drop_and_create_all()
 
-'''
-@TODO uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-!! Running this funciton will add one
-'''
-# db_drop_and_create_all()
 
-# ROUTES
+#------------------------------------------------------#
+# Helper Functions
+#------------------------------------------------------#
+
+
+
+
+
+
+
+#------------------------------------------------------#
+# Endpoint Routes
+#------------------------------------------------------#
 '''
 @TODO implement endpoint
     GET /drinks
@@ -76,39 +87,45 @@ CORS(app)
 '''
 
 
-# Error Handling
-'''
-Example error handling for unprocessable entity
-'''
+#------------------------------------------------------#
+# Error Handlers
+#------------------------------------------------------#
 
+# implement error handlers using the @app.errorhandler(error) decorator
 
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
         "success": False,
         "error": 422,
-        "message": "unprocessable"
+        "message": "Unprocessable"
     }), 422
 
 
-'''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False,
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad Request"
+    }), 400
 
-'''
+# implement error handler for 404
 
-'''
-@TODO implement error handler for 404
-    error handler should conform to general task above
-'''
+@app.errorhandler(404)
+def resource_not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "Resource Not Found"
+    }), 404
 
+# TODO DONE implement error handler for AuthError
 
-'''
-@TODO implement error handler for AuthError
-    error handler should conform to general task above
-'''
+@app.errorhandler(AuthError)
+def authentication_failed(AuthError):
+    return jsonify({
+        "success": False,
+        "error": AuthError.status_code,
+        "message": AuthError.error
+    }), 401
