@@ -208,3 +208,6 @@ frontend/webpack.ps1
 frontend/which
 frontend/which.cmd
 frontend/which.ps1
+frontend/sass
+frontend/sass.cmd
+frontend/sass.ps1
