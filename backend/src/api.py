@@ -15,7 +15,8 @@ from .auth.auth import AuthError, requires_auth
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
-db_drop_and_create_all()
+with app.app_context():
+    db_drop_and_create_all()
 
 
 #------------------------------------------------------#
@@ -76,7 +77,7 @@ def post_drinks(payload):
     # TODO return proper success/error codes
 
     return jsonify({
-        'success':True.
+        'success':True,
         'drinks':drink
     })
 
