@@ -27,6 +27,24 @@ with app.app_context():
 
 
 
+def get_drinks(format):
+# THIS IS CONVERTED FROM GITHUB CODE!!!!!!!!!!!!
+# SOURCE: https://github.com/Thalrion/Udacity-Full-Stack-Developer-Nanodegree/blob/master/project03_coffee_shop/finished/backend/src/api.py
+
+    all_drinks = Drink.query.order_by(Drink.id).all()
+
+    # Get recipe detail format
+    if recipe_format.lower() == 'short':
+        all_drinks_formatted = [drink.short() for drink in all_drinks]
+    elif recipe_format.lower() == 'long':
+        all_drinks_formatted = [drink.long() for drink in all_drinks]
+    else:
+        return abort(500)
+
+    if len(all_drinks_formatted) == 0:
+        abort(404, {'message': 'no drinks found in database.'})
+
+    return all_drinks_formatted
 
 
 #------------------------------------------------------#
@@ -34,30 +52,20 @@ with app.app_context():
 #------------------------------------------------------#
 
 # GET /drinks
-@app.route('/drinks')
+@app.route('/drinks', methods=['GET'])
 @requires_auth('get:drinks')
 def drinks(payload):
-    
-    drinks = ''
 
-    # TODO return drink.short() data as 'drinks' var
-    # TODO return proper success/error codes
-    
     return jsonify({
         'success':True,
-        'drinks':drinks
+        'drinks':get_all_drinks('short')
     })
 
 
 # GET /drinks-detail
-@app.route('/drinks-detail')
+@app.route('/drinks-detail', methods=['GET'])
 @requires_auth('get:drinks-detail')
 def drinks_detail(payload):
-
-    drinks_detail = ''
-
-    # TODO return drinks.long() data as 'drinks_detail' var
-    # TODO return proper success/error codes
 
     return jsonify({
         'success':True,
@@ -66,52 +74,65 @@ def drinks_detail(payload):
 
 
 # POST /drinks
-@app.route('/drinks')
+@app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def post_drinks(payload):
 
-    drink = ''
+    body = request.get_json()
+    drink = Drink(
+        title = body['title'],
+        recipe = """{}""".format(body['recipe'])
+    )
 
-    # TODO check if payload contains drink.long() formatted data for new drink
-    # TODO format 'drink' var to be an array containing data from payload
-    # TODO return proper success/error codes
+    drink.insert()
+    drink.recipe = body['recipe']
 
     return jsonify({
         'success':True,
-        'drinks':drink
+        'drinks': Drink.long(drink)
     })
 
 
 # PATCH /drinks/<drink_id>
-@app.route('/drinks/<drink_id>')
+@app.route('/drinks/<drink_id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def update_drink(payload):
 
-    drink = ''
+    body = request.get_json()
 
-    # TODO check to find drink by 'drink_id'
-        # TODO ?? Check if payload contains 'drinks.long()' ??
-    # TODO return 404 if ID doesn't exist
-    # TODO format 'drink' var to be an array containing data from payload
-    # TODO return proper success/error codes
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    title_new = body.get('title', None)
+    recipe_new = body.get('recipe', None)
+
+    if title_new:
+        drink.title = body['title']
+
+    if recipe_new:
+        drink.recipe = """{}""".format(body['recipe'])
+
+    drink.update()
 
     return jsonify({
         'success':True,
-        'drinks':drink
+        'drinks': [Drink.long(drink)]
     })
 
 
 # DELETE /drinks/<drink_id>
-@app.route('/drinks/<drink_id>')
+@app.route('/drinks/<drink_id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
 def delete_drink(payload):
 
-    drink = ''
+    if not drink_id:
+        abort(422)
 
-    # TODO check to find drink by 'drink_id'
-    # TODO return 404 if ID doesn't exist
-    # TODO delete record for drink
-    # TODO return proper success/error codes
+    drink = Drink.query.filter(Drink.id == drink_id).one_or_none()
+
+    if not drink:
+        abort(404)
+
+    drink.delete()
 
     return jsonify({
         'success':True,
@@ -122,8 +143,6 @@ def delete_drink(payload):
 #------------------------------------------------------#
 # Error Handlers
 #------------------------------------------------------#
-
-# implement error handlers using the @app.errorhandler(error) decorator
 
 @app.errorhandler(422)
 def unprocessable(error):
@@ -142,8 +161,6 @@ def bad_request(error):
         "message": "Bad Request"
     }), 400
 
-# implement error handler for 404
-
 @app.errorhandler(404)
 def resource_not_found(error):
     return jsonify({
@@ -152,8 +169,6 @@ def resource_not_found(error):
         "message": "Resource Not Found"
     }), 404
 
-# TODO DONE implement error handler for AuthError
-
 @app.errorhandler(AuthError)
 def authentication_failed(AuthError):
     return jsonify({
@@ -161,3 +176,11 @@ def authentication_failed(AuthError):
         "error": AuthError.status_code,
         "message": AuthError.error
     }), 401
+
+@app.errorhandler(500)
+def bad_format_request(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": 'Wrong format. Format needs to be "short" or "long".'
+    }), 500

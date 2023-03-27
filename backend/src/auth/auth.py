@@ -1,5 +1,5 @@
 import json
-from flask import request, _request_ctx_stack
+from flask import request, _request_ctx_stack, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
@@ -7,7 +7,7 @@ from urllib.request import urlopen
 
 AUTH0_DOMAIN = 'dev-urknm1fdk0lop412.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'coffee'
+API_AUDIENCE = 'Coffee'
 
 
 
@@ -24,31 +24,35 @@ def get_token_auth_header():
     auth = request.headers.get('Authorization',None)
     
     if not auth:
+        print('Authorization header is expected')
         raise AuthError({
             'code': 'authorization_header_missing',
             'description': 'Authorization header is expected.'
         }, 401)
     
     parts = auth.split()
-
+    
     if parts[0].lower() != 'bearer':
+        print('Authorization header must start with "Bearer"')
         raise AuthError({
             'code': 'invalid_header',
             'description': 'Authorization header must start with "Bearer".'
         }, 401)
-
+        
     elif len(parts) == 1:
+        print('Token not found')
         raise AuthError({
             'code': 'invalid_header',
             'description': 'Token not found.'
         }, 401)
-
+        
     elif len(parts) > 2:
+        print('Authorization header must be bearer token')
         raise AuthError({
             'code': 'invalid_header',
             'description': 'Authorization header must be bearer token.'
         }, 401)
-
+    
     token = parts[1]
     return token
 
@@ -85,6 +89,14 @@ def verify_decode_jwt(token):
         }, 401)
 
     for key in jwks['keys']:
+        
+        # TODO THERE IS AN ISSUE WITH THE RSA KEY!!!!
+        print('Key:')
+        print(key['kid'])
+        print('Unverified Header:')
+        print(unverified_header['kid'])
+        
+        # TODO THE UNVERIVIED HEADER KEY DOES NOT MATCH TOKEN KEY
         if key['kid'] == unverified_header['kid']:
             rsa_key = {
                 'kty': key['kty'],
@@ -93,7 +105,9 @@ def verify_decode_jwt(token):
                 'n': key['n'],
                 'e': key['e']
             }
+
     if rsa_key:
+        
         try:
             payload = jwt.decode(
                 token,
@@ -102,6 +116,7 @@ def verify_decode_jwt(token):
                 audience=API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
             )
+            print('5')
             return payload
         
         except jwt.ExpiredSignatureError:
@@ -131,12 +146,16 @@ def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            
             token = get_token_auth_header()
+            
             try:
                 payload = verify_decode_jwt(token)
             except:
                 abort(401)
+            
             check_permissions(permission, payload)
             return f(payload, *args, **kwargs)
+
         return wrapper
     return requires_auth_decorator
