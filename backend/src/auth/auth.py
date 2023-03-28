@@ -7,7 +7,7 @@ from urllib.request import urlopen
 
 AUTH0_DOMAIN = 'dev-urknm1fdk0lop412.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'Coffee'
+API_AUDIENCE = 'coffee'
 
 
 
@@ -83,20 +83,14 @@ def verify_decode_jwt(token):
     rsa_key = {}
 
     if 'kid' not in unverified_header:
+        
         raise AuthError({
             'code': 'invalid_header',
             'description': 'Authorization malformed.'
         }, 401)
 
     for key in jwks['keys']:
-        
-        # TODO THERE IS AN ISSUE WITH THE RSA KEY!!!!
-        print('Key:')
-        print(key['kid'])
-        print('Unverified Header:')
-        print(unverified_header['kid'])
-        
-        # TODO THE UNVERIVIED HEADER KEY DOES NOT MATCH TOKEN KEY
+
         if key['kid'] == unverified_header['kid']:
             rsa_key = {
                 'kty': key['kty'],
@@ -107,8 +101,9 @@ def verify_decode_jwt(token):
             }
 
     if rsa_key:
-        
+
         try:
+
             payload = jwt.decode(
                 token,
                 rsa_key,
@@ -116,7 +111,7 @@ def verify_decode_jwt(token):
                 audience=API_AUDIENCE,
                 issuer='https://' + AUTH0_DOMAIN + '/'
             )
-            print('5')
+                        
             return payload
         
         except jwt.ExpiredSignatureError:

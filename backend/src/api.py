@@ -27,7 +27,7 @@ with app.app_context():
 
 
 
-def get_drinks(format):
+def get_drinks(recipe_format):
 # THIS IS CONVERTED FROM GITHUB CODE!!!!!!!!!!!!
 # SOURCE: https://github.com/Thalrion/Udacity-Full-Stack-Developer-Nanodegree/blob/master/project03_coffee_shop/finished/backend/src/api.py
 
@@ -58,7 +58,7 @@ def drinks(payload):
 
     return jsonify({
         'success':True,
-        'drinks':get_all_drinks('short')
+        'drinks':get_drinks('short')
     })
 
 
@@ -69,7 +69,7 @@ def drinks_detail(payload):
 
     return jsonify({
         'success':True,
-        'drinks':drinks_detail
+        'drinks':get_drinks('long')
     })
 
 
