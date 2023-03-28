@@ -1,11 +1,12 @@
+# Specifies intentionally untracked files to ignore when using Git
+# http://git-scm.com/docs/gitignore
+
 env/
 venv/
 .vscode/
 __pycache__/
 test.db
 
-# OS generated files #
-######################
 .DS_Store
 .DS_Store?
 ._*
@@ -14,7 +15,36 @@ test.db
 ehthumbs.db
 Thumbs.db
 
+UserInterfaceState.xcuserstate
 
+*~
+*.sw[mnpcod]
+*.log
+*.tmp
+*.tmp.*
+log.txt
+*.sublime-project
+*.sublime-workspace
+npm-debug.log*
+
+.idea/
+.ionic/
+.sourcemaps/
+.sass-cache/
+.tmp/
+.versions/
+coverage/
+www/
+
+tmp/
+temp/
+platforms/
+plugins/
+plugins/android.json
+plugins/ios.json
+$RECYCLE.BIN/
+
+node_modules/
 
 frontend/acorn
 frontend/acorn.cmd
